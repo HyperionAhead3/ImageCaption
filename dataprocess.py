@@ -97,3 +97,5 @@ def read_tfrecord_data(example):
     caption = tf.cast(caption, tf.int16)
 
     return {"image": image, "caption": caption}
+
+write_train_tfrecord()

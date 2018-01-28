@@ -20,3 +20,8 @@ class TrainConfg:
         self.learning_rate_with_inception = 0.0005
         self.learning_rate_without_inception = 2
         self.decay_rate = 0.5
+        self.num_per_epoch = 90000
+        self.num_epochs_per_decay = 8
+        self.optimizer = "SGD"
+        self.clip_gradients = 5
+        self.max_checkpoints_to_keep = 5
