@@ -1,4 +1,5 @@
 import jieba
+import tensorflow as tf
 
 
 class Dictionary:
@@ -61,5 +62,18 @@ class Dictionary:
 
         print("Dictionary has {} tokens".format(count + 1))
 
+    def parse(self, elem):
+        file = elem["image"]
+        if ("caption" in elem):
+            caption = elem["caption"]
+        else:
+            caption = None
 
-Dictionary()
+        image_f = tf.read_file(file)
+        image_decodeed = tf.image.decode_jpeg(image_f)
+        image_resize = tf.image.resize_images(image_decodeed, [299, 299])
+
+        if caption is not None:
+            pass
+
+

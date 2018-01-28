@@ -24,7 +24,6 @@ class SCA_CNN(object):
             trainable=False,
             collections=[tf.GraphKeys.GLOBAL_STEP, tf.GraphKeys.GLOBAL_VARIABLES])
 
-        self.batch_input()
         self.build(is_training_inception)
 
         assert mode in ["train", "eval", "inference"]
@@ -69,8 +68,9 @@ class SCA_CNN(object):
                                              tf.initializers.random_uniform(-1, 1))
             return tf.nn.embedding_lookup(word_embedding, word_idx_input)
 
-    def batch_input(self):
-        self.caption_len =
+    def cal_len(self, caption):
+        pos = tf.not_equal(caption, tf.constant(0, tf.int64))
+        self.caption_len = tf.where(pos, tf.fill(tf.shape(caption), 1), tf.fill(tf.shape(caption), 0))
 
     def build(self, is_training_inception):
         # get variables in inception v3
@@ -96,6 +96,14 @@ class SCA_CNN(object):
         image_embedding = self.embedding_image(feature)
         # [batch_size,sen_len,embedding_size]
         word_embedding = self.embedding_seq(self.caption)
+
+        # calc mask
+        pos = tf.not_equal(self.caption, tf.constant(0, tf.int64))
+        self.caption_len = tf.where(pos, tf.fill(tf.shape(self.caption), 1), tf.fill(tf.shape(self.caption), 0))
+
+        if self.mode != "inference":
+            # calc target
+            self.target = tf.concat([self.caption[:, 1:], tf.zeros([self.caption.shape[0], 1], tf.int64)], axis=-1)
 
         # RNN
         lstm = BasicLSTMCell(self.config.embedding_size, name="LSTMcell", reuse=True)
